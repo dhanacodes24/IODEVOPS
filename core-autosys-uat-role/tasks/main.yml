@@ -1,3 +1,13 @@
 #SPDX-License-Identifier: MIT-0
 ---
+
 # tasks file for core-autosys-uat-role
+- name: Autosys Restart Automation
+  hosts: autosys_hosts
+  become: yes
+  tasks:
+    - import_tasks: stop.yml
+    - import_tasks: start.yml
+    - import_tasks: status.yml
+    - import_tasks: restart.yml
+      when: ansible_limit == "uat"   #  only run restart in UAT#

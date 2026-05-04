@@ -1,0 +1,32 @@
+- name: Restart Autosys sequentially
+  hosts: autosys_hosts
+  become: yes
+  serial: 1   # Run on one host at a time
+  tasks:
+    - name: Stop Autosys on shadow (HOST2) first
+      ansible.builtin.systemd:
+        name: autosys
+        state: stopped
+      when: inventory_hostname == "host2"
+      tags: stop
+
+    - name: Stop Autosys on primary (HOST1) second
+      ansible.builtin.systemd:
+        name: autosys
+        state: stopped
+      when: inventory_hostname == "host1"
+      tags: stop
+
+    - name: Start Autosys on primary (HOST1) first
+      ansible.builtin.systemd:
+        name: autosys
+        state: started
+      when: inventory_hostname == "host1"
+      tags: start
+
+    - name: Start Autosys on shadow (HOST2) second
+      ansible.builtin.systemd:
+        name: autosys
+        state: started
+      when: inventory_hostname == "host2"
+      tags: start

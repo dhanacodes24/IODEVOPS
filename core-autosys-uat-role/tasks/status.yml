@@ -1,0 +1,10 @@
+- name: Check Autosys service status
+  ansible.builtin.systemd:
+    name: autosys
+  register: autosys_status
+  tags: status
+
+- name: Print Autosys status
+  debug:
+    msg: "Autosys service state: {{ autosys_status.status.ActiveState }}"
+  tags: status

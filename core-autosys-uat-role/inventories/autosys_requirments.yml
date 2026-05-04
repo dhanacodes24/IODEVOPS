@@ -1,0 +1,9 @@
+[host1]
+192.168.1.10
+
+[host2]
+192.168.1.11
+
+[autosys_hosts:children]
+host1 ## Primary scheduler
+host2 ##Shadow shceduler
