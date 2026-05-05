@@ -1,13 +1,16 @@
-- name: Stop Autosys on HOST2 first
-  ansible.builtin.systemd:
-    name: autosys
-    state: stopped
-  when: inventory_hostname == "host2"
-  tags: stop
+- hosts: host2
+  serial: 1
+  tasks:
+    - name: Stop Autosys on HOST2 first
+      ansible.builtin.systemd:
+        name: autosys
+        state: stopped
+      tags: stop
 
-- name: Stop Autosys on HOST1 second
-  ansible.builtin.systemd:
-    name: autosys
-    state: stopped
-  when: inventory_hostname == "host1"
-  tags: stop
+- hosts: host1
+  serial: 1
+  tasks:
+    - name: Stop Autosys on HOST1 second
+      ansible.builtin.systemd:
+        name: autosys
+       
