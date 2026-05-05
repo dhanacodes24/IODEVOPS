@@ -1,13 +1,17 @@
-- name: Start Autosys on HOST1 first
-  ansible.builtin.systemd:
-    name: autosys
-    state: started
-  when: inventory_hostname == "host1"
-  tags: start
+- hosts: host1
+  serial: 1
+  tasks:
+    - name: Start Autosys on HOST1 first
+      ansible.builtin.systemd:
+        name: autosys
+        state: started
+      tags: start
 
-- name: Start Autosys on HOST2 second
-  ansible.builtin.systemd:
-    name: autosys
-    state: started
-  when: inventory_hostname == "host2"
-  tags: start
+- hosts: host2
+  serial: 1
+  tasks:
+    - name: Start Autosys on HOST2 second
+      ansible.builtin.systemd:
+        name: autosys
+        state: started
+      tags: start
