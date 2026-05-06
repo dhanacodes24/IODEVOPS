@@ -163,5 +163,3 @@ systemctl --version  →  errors?
 ```
 
 ---
-
-## What to Tell the Interviewer
