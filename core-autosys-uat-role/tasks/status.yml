@@ -1,10 +1,12 @@
-- name: Check Autosys service status
-  ansible.builtin.systemd:
-    name: autosys
-  register: autosys_status
-  tags: status
+- name: Check Autosys status
+  hosts: autosys_hosts
+  become: yes
+  tasks:
+    - name: Run status command
+      ansible.builtin.shell: su - autosys -c "unisrvcntr status all"
+      register: autosys_status
+      tags: status
 
-- name: Print Autosys status
-  debug:
-    msg: "Autosys service state: {{ autosys_status.status.ActiveState }}"
-  tags: status
+    - name: Display Autosys status
+      ansible.builtin.debug:
+        var: autosys_status.stdout

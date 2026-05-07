@@ -1,17 +1,24 @@
-- hosts: host1
+- name: Start Autosys
+  hosts: autosys_hosts
+  become: yes
   serial: 1
   tasks:
-    - name: Start Autosys on HOST1 first
-      ansible.builtin.systemd:
-        name: autosys
-        state: started
+    - name: Start Autosys on shadow (HOST1) first
+      ansible.builtin.shell: su - autosys -c "unisrvcntr start all"
+      when: inventory_hostname == "host1"
       tags: start
 
-- hosts: host2
-  serial: 1
-  tasks:
-    - name: Start Autosys on HOST2 second
-      ansible.builtin.systemd:
-        name: autosys
-        state: started
+    - name: Confirm shadow scheduler started
+      ansible.builtin.debug:
+        msg: "Shadow scheduler started successfully"
+      when: inventory_hostname == "host1"
+
+    - name: Start Autosys on primary (HOST2) second
+      ansible.builtin.shell: su - autosys -c "unisrvcntr start all"
+      when: inventory_hostname == "host2"
       tags: start
+
+    - name: Confirm primary scheduler started
+      ansible.builtin.debug:
+        msg: "Primary scheduler started successfully"
+      when: inventory_hostname == "host2"

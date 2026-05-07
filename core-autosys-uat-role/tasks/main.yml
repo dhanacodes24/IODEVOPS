@@ -1,13 +1,23 @@
-#SPDX-License-Identifier: MIT-0
----
-
-# tasks file for core-autosys-uat-role
-- name: Autosys Restart Automation
+- name: Autosys Control Playbook
   hosts: autosys_hosts
   become: yes
+  serial: 1   # sequential execution across hosts
   tasks:
-    - import_tasks: stop.yml
-    - import_tasks: start.yml
-    - import_tasks: status.yml
-    - import_tasks: restart.yml
-      when: ansible_limit == "uat"   #  only run restart in UAT#
+    - name: Include stop tasks
+      import_tasks: stop.yml
+      tags: stop
+
+    - name: Include start tasks
+      import_tasks: start.yml
+      tags: start
+
+    - name: Include status tasks
+      import_tasks: status.yml
+      tags: status
+
+    - name: Restart sequence (stop → start → status)
+      block:
+        - import_tasks: stop.yml
+        - import_tasks: start.yml
+        - import_tasks: status.yml
+      tags: restart

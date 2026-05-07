@@ -1,16 +1,24 @@
-- hosts: host2
+- name: Stop Autosys
+  hosts: autosys_hosts
+  become: yes
   serial: 1
   tasks:
-    - name: Stop Autosys on HOST2 first
-      ansible.builtin.systemd:
-        name: autosys
-        state: stopped
+    - name: Stop Autosys on shadow (HOST2) first
+      ansible.builtin.shell: su - autosys -c "unisrvcntr stop all"
+      when: inventory_hostname == "host2"
       tags: stop
 
-- hosts: host1
-  serial: 1
-  tasks:
-    - name: Stop Autosys on HOST1 second
-      ansible.builtin.systemd:
-        name: autosys
-       
+    - name: Confirm shadow scheduler down
+      ansible.builtin.debug:
+        msg: "Shadow scheduler stopped successfully"
+      when: inventory_hostname == "host2"
+
+    - name: Stop Autosys on primary (HOST1) second
+      ansible.builtin.shell: su - autosys -c "unisrvcntr stop all"
+      when: inventory_hostname == "host1"
+      tags: stop
+
+    - name: Confirm primary scheduler down
+      ansible.builtin.debug:
+        msg: "Primary scheduler stopped successfully"
+      when: inventory_hostname == "host1"
