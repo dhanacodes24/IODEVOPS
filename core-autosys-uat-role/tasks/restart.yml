@@ -1,7 +1,23 @@
-- name: Restart Autosys sequentially
+- name: Autosys Control Playbook
   hosts: autosys_hosts
   become: yes
+  serial: 1   # run on one host at a time
   tasks:
-    - import_tasks: stop.yml
-    - import_tasks: start.yml
-    - import_tasks: status.yml
+    - name: Stop Autosys
+      import_tasks: stop.yml
+      tags: stop
+
+    - name: Start Autosys
+      import_tasks: start.yml
+      tags: start
+
+    - name: Check Autosys status
+      import_tasks: status.yml
+      tags: status
+
+    - name: Restart Autosys sequentially
+      block:
+        - import_tasks: stop.yml
+        - import_tasks: start.yml
+        - import_tasks: status.yml
+      tags: restart
